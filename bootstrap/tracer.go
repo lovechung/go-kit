@@ -11,11 +11,12 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	traceSdk "go.opentelemetry.io/otel/sdk/trace"
 	semConv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"time"
 )
 
-func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
+func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) (trace.TracerProvider, func()) {
 	client := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(endpoint),
@@ -28,7 +29,7 @@ func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
 	}
 
 	bsp := traceSdk.NewBatchSpanProcessor(exp)
-	tracerProvider := traceSdk.NewTracerProvider(
+	tp := traceSdk.NewTracerProvider(
 		traceSdk.WithSampler(traceSdk.AlwaysSample()),
 		traceSdk.WithResource(resource.NewSchemaless(
 			semConv.ServiceNameKey.String(serviceInfo.Name),
@@ -39,9 +40,9 @@ func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
 		traceSdk.WithSpanProcessor(bsp),
 	)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
-	otel.SetTracerProvider(tracerProvider)
+	otel.SetTracerProvider(tp)
 
-	return func() {
+	return tp, func() {
 		cxt, cancel := context.WithTimeout(ctx, time.Second)
 		defer cancel()
 		if err := exp.Shutdown(cxt); err != nil {
