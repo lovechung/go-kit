@@ -22,7 +22,7 @@ func NewCommandFlags() *CommandFlags {
 func (f *CommandFlags) Init() {
 	flag.StringVar(&f.Env, "env", "dev", "environment")
 	flag.StringVar(&f.Conf, "conf", "./configs", "config path")
-	flag.StringVar(&f.ConfigType, "config_type", "consul", "config server host")
-	flag.StringVar(&f.ConfigHost, "config_host", "139.224.187.162:8500", "config server host")
-	flag.StringVar(&f.ConfigToken, "config_token", "f86ff0d5-ee3d-70af-a01a-8e5634bd785c", "config server token")
+	flag.StringVar(&f.ConfigType, "config_type", "", "config server host")
+	flag.StringVar(&f.ConfigHost, "config_host", "", "config server host")
+	flag.StringVar(&f.ConfigToken, "config_token", "", "config server token")
 }
