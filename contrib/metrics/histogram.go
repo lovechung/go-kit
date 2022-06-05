@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"context"
-	"go-kit/metrics"
+	"github.com/lovechung/go-kit/metrics"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric/instrument/syncint64"
 )

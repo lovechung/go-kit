@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	t "go-kit/util/time"
+	"github.com/lovechung/go-kit/util/time"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
