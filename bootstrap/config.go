@@ -40,15 +40,23 @@ func NewConsulConfigSource(configHost, configKey, configToken string) config.Sou
 
 // NewConfigProvider 创建一个配置
 func NewConfigProvider(configPath, configType, configHost, configToken, configKey string) config.Config {
-	return config.New(
-		config.WithSource(
-			// 后者会覆盖前者同层级的key（此处即consul的配置会将本地配置覆盖）
-			NewFileConfigSource(configPath),
-			NewRemoteConfigSource(configType, configHost, configKey, configToken),
-		),
-		// 用consul做配置中心，此处应显示定义解析格式
-		config.WithDecoder(func(kv *config.KeyValue, v map[string]interface{}) error {
-			return yaml.Unmarshal(kv.Value, v)
-		}),
-	)
+	var options []config.Option
+
+	// 本地配置
+	local := config.WithSource(NewFileConfigSource(configPath))
+	options = append(options, local)
+
+	// 远程配置
+	remote := NewRemoteConfigSource(configType, configHost, configKey, configToken)
+	if remote != nil {
+		options = append(options, config.WithSource(remote))
+	}
+
+	// 显示定义解析格式为yaml
+	decoder := config.WithDecoder(func(kv *config.KeyValue, v map[string]interface{}) error {
+		return yaml.Unmarshal(kv.Value, v)
+	})
+	options = append(options, decoder)
+
+	return config.New(options...)
 }
