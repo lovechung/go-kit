@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
+func NewMetricProvider(endpoint, env string, hostWatch bool, serviceInfo *ServiceInfo) func() {
 	client := otlpmetricgrpc.NewClient(
 		otlpmetricgrpc.WithInsecure(),
 		otlpmetricgrpc.WithEndpoint(endpoint),
@@ -53,9 +53,11 @@ func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
 		log.Fatalf("failed to start the collector: %v", err)
 	}
 
-	err = host.Start()
-	if err != nil {
-		log.Fatalf("failed to start the host metric: %v", err)
+	if hostWatch {
+		err = host.Start()
+		if err != nil {
+			log.Fatalf("failed to start the host metric: %v", err)
+		}
 	}
 
 	return func() {
