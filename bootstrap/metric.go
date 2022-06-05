@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func NewMetricProvider(endpoint, env string, hostWatch bool, serviceInfo *ServiceInfo) func() {
+func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch bool) func() {
 	client := otlpmetricgrpc.NewClient(
 		otlpmetricgrpc.WithInsecure(),
 		otlpmetricgrpc.WithEndpoint(endpoint),
