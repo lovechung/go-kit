@@ -3,7 +3,6 @@ package bootstrap
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"go.opentelemetry.io/contrib/instrumentation/host"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -18,7 +17,7 @@ import (
 	"time"
 )
 
-func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch bool) {
+func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 	client := otlpmetricgrpc.NewClient(
 		otlpmetricgrpc.WithInsecure(),
 		otlpmetricgrpc.WithEndpoint(endpoint),
@@ -50,12 +49,5 @@ func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch
 	err = pusher.Start(ctx)
 	if err != nil {
 		log.Fatalf("failed to start the collector: %v", err)
-	}
-
-	if hostWatch {
-		err = host.Start()
-		if err != nil {
-			log.Fatalf("failed to start the host metric: %v", err)
-		}
 	}
 }
