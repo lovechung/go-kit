@@ -12,10 +12,9 @@ import (
 	traceSdk "go.opentelemetry.io/otel/sdk/trace"
 	semConv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"google.golang.org/grpc"
-	"time"
 )
 
-func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
+func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 	client := otlptracegrpc.NewClient(
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(endpoint),
@@ -40,12 +39,4 @@ func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) func() {
 	)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	otel.SetTracerProvider(tp)
-
-	return func() {
-		cxt, cancel := context.WithTimeout(ctx, time.Second)
-		defer cancel()
-		if err := exp.Shutdown(cxt); err != nil {
-			otel.Handle(err)
-		}
-	}
 }

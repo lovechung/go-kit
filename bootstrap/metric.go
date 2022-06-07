@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"go.opentelemetry.io/contrib/instrumentation/host"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
@@ -19,7 +18,7 @@ import (
 	"time"
 )
 
-func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch bool) func() {
+func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch bool) {
 	client := otlpmetricgrpc.NewClient(
 		otlpmetricgrpc.WithInsecure(),
 		otlpmetricgrpc.WithEndpoint(endpoint),
@@ -57,14 +56,6 @@ func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo, hostWatch
 		err = host.Start()
 		if err != nil {
 			log.Fatalf("failed to start the host metric: %v", err)
-		}
-	}
-
-	return func() {
-		cxt, cancel := context.WithTimeout(ctx, time.Second)
-		defer cancel()
-		if err := exp.Shutdown(cxt); err != nil {
-			otel.Handle(err)
 		}
 	}
 }
