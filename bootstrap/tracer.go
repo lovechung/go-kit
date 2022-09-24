@@ -9,8 +9,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
-	traceSdk "go.opentelemetry.io/otel/sdk/trace"
-	semConv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/sdk/trace"
+	semConv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"google.golang.org/grpc"
 )
 
@@ -26,16 +26,16 @@ func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 		log.Fatalf("failed to create the trace: %v", err)
 	}
 
-	bsp := traceSdk.NewBatchSpanProcessor(exp)
-	tp := traceSdk.NewTracerProvider(
-		traceSdk.WithSampler(traceSdk.AlwaysSample()),
-		traceSdk.WithResource(resource.NewSchemaless(
+	bsp := trace.NewBatchSpanProcessor(exp)
+	tp := trace.NewTracerProvider(
+		trace.WithSampler(trace.AlwaysSample()),
+		trace.WithResource(resource.NewSchemaless(
 			semConv.ServiceNameKey.String(serviceInfo.Name),
 			semConv.ServiceVersionKey.String(serviceInfo.Version),
 			semConv.ServiceInstanceIDKey.String(serviceInfo.Id),
 			attribute.String("env", env),
 		)),
-		traceSdk.WithSpanProcessor(bsp),
+		trace.WithSpanProcessor(bsp),
 	)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	otel.SetTracerProvider(tp)
