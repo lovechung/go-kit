@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20220604031450-874d4c3edcf5
-	github.com/go-kratos/kratos/v2 v2.3.1
+	github.com/go-kratos/kratos/v2 v2.5.0
 	github.com/hashicorp/consul/api v1.13.0
 	go.opentelemetry.io/otel v1.7.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric v0.30.0

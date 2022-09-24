@@ -1,18 +1,13 @@
 package bootstrap
 
 import (
-	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/lovechung/go-kit/util/time"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
-	"runtime"
-	"strconv"
-	"strings"
 )
 
 var _ log.Logger = (*ZapLogger)(nil)
@@ -41,7 +36,7 @@ func NewLoggerProvider(env string, logFile string, serviceInfo *ServiceInfo) log
 		//CallerKey:      "caller",
 		//MessageKey:     "msg",
 		//StacktraceKey:  "stack",
-		EncodeTime:     zapcore.TimeEncoderOfLayout(t.FORMATTER),
+		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000"),
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    el,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
@@ -64,28 +59,9 @@ func NewLoggerProvider(env string, logFile string, serviceInfo *ServiceInfo) log
 		"service.name", serviceInfo.Name,
 		"trace_id", tracing.TraceID(),
 		"span_id", tracing.SpanID(),
-		"caller", Caller(),
+		"caller", log.DefaultCaller,
 	)
 	return logger
-}
-
-// Caller 重写log的Caller方法
-func Caller() log.Valuer {
-	return func(context.Context) interface{} {
-		d := 3
-		_, file, line, _ := runtime.Caller(d)
-		if strings.LastIndex(file, "/log/filter.go") > 0 {
-			d++
-			_, file, line, _ = runtime.Caller(d)
-		}
-		if strings.LastIndex(file, "/log/helper.go") > 0 {
-			d++
-			_, file, line, _ = runtime.Caller(d)
-		}
-		tmp := strings.LastIndexByte(file, '/')
-		idx := strings.LastIndexByte(file[0:tmp-1], '/')
-		return file[idx+1:] + ":" + strconv.Itoa(line)
-	}
 }
 
 // NewZapLogger return a zap logger.
