@@ -7,6 +7,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/aggregation"
+	"go.opentelemetry.io/otel/sdk/metric/view"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semConv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"google.golang.org/grpc"
@@ -25,7 +27,17 @@ func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 	}
 
 	meterProvider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(exp, metric.WithInterval(time.Second*10))),
+		metric.WithReader(
+			metric.NewPeriodicReader(
+				exp,
+				metric.WithInterval(time.Second*10),
+				metric.WithAggregationSelector(func(ik view.InstrumentKind) aggregation.Aggregation {
+					return aggregation.ExplicitBucketHistogram{
+						Boundaries: []float64{100, 200, 300, 500, 1000, 2000, 5000},
+						NoMinMax:   false,
+					}
+				})),
+		),
 		metric.WithResource(resource.NewSchemaless(
 			semConv.ServiceNameKey.String(serviceInfo.Name),
 			semConv.ServiceVersionKey.String(serviceInfo.Version),
