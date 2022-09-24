@@ -11,6 +11,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/view"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semConv "go.opentelemetry.io/otel/semconv/v1.12.0"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -43,6 +44,7 @@ func NewMetricProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 			semConv.ServiceVersionKey.String(serviceInfo.Version),
 			semConv.ServiceInstanceIDKey.String(serviceInfo.Id),
 			attribute.String("env", env),
+			attribute.String("trace_id", trace.SpanContextFromContext(ctx).TraceID().String()),
 		)),
 	)
 
