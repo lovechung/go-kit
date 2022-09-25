@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/lovechung/go-kit/metrics"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"time"
 )
 
@@ -45,7 +44,6 @@ func Server(opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			var (
 				code      int
-				reason    string
 				kind      string
 				operation string
 			)
@@ -57,14 +55,11 @@ func Server(opts ...Option) middleware.Middleware {
 			reply, err := handler(ctx, req)
 			if se := errors.FromError(err); se != nil {
 				code = int(se.Code)
-				reason = se.Reason
 			}
 			serverAttribute := []attribute.KeyValue{
 				attribute.String("kind", kind),
 				attribute.String("operation", operation),
 				attribute.Int("code", code),
-				attribute.String("reason", reason),
-				attribute.String("trace_id", trace.SpanContextFromContext(ctx).TraceID().String()),
 			}
 			if op.requests != nil {
 				op.requests.With(serverAttribute).Add(ctx, 1)
