@@ -4,7 +4,6 @@ import "flag"
 
 type CommandFlags struct {
 	Conf        string
-	ConfigType  string
 	ConfigHost  string
 	ConfigToken string
 }
@@ -12,7 +11,6 @@ type CommandFlags struct {
 func NewCommandFlags() *CommandFlags {
 	return &CommandFlags{
 		Conf:        "",
-		ConfigType:  "consul",
 		ConfigHost:  "",
 		ConfigToken: "",
 	}
