@@ -16,9 +16,6 @@ type ServiceInfo struct {
 func NewServiceInfo(env, name, version, id string) ServiceInfo {
 	if id == "" {
 		id = GetLocalIP()
-		if id == "" {
-			id, _ = os.Hostname()
-		}
 	}
 	return ServiceInfo{
 		Env:      env,
@@ -30,7 +27,8 @@ func NewServiceInfo(env, name, version, id string) ServiceInfo {
 }
 
 func (s *ServiceInfo) GetInstanceId() string {
-	return s.Id + "." + s.Name
+	hostname, _ := os.Hostname()
+	return s.Id + "_" + hostname
 }
 
 func (s *ServiceInfo) SetMataData(k, v string) {
