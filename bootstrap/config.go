@@ -13,6 +13,15 @@ func NewFileConfigSource(filePath string) config.Source {
 	return file.NewSource(filePath)
 }
 
+// NewRemoteConfigSource 创建一个远程配置源
+func NewRemoteConfigSource(configType, configHost, configKey, configToken string) config.Source {
+	switch configType {
+	case "consul":
+		return NewConsulConfigSource(configHost, configKey, configToken)
+	}
+	return nil
+}
+
 // NewConsulConfigSource 创建一个远程配置源 - Consul
 func NewConsulConfigSource(configHost, configKey, configToken string) config.Source {
 	consulClient, err := api.NewClient(&api.Config{
@@ -30,7 +39,7 @@ func NewConsulConfigSource(configHost, configKey, configToken string) config.Sou
 }
 
 // NewConfigProvider 创建一个配置
-func NewConfigProvider(configPath, configHost, configToken, configKey string) config.Config {
+func NewConfigProvider(configPath, configType, configHost, configToken, configKey string) config.Config {
 	var options []config.Option
 
 	// 本地配置
@@ -38,7 +47,7 @@ func NewConfigProvider(configPath, configHost, configToken, configKey string) co
 	options = append(options, local)
 
 	// 远程配置
-	remote := NewConsulConfigSource(configHost, configKey, configToken)
+	remote := NewRemoteConfigSource(configType, configHost, configKey, configToken)
 	if remote != nil {
 		options = append(options, config.WithSource(remote))
 	}
