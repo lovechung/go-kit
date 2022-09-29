@@ -28,7 +28,7 @@ func NewServiceInfo(env, name, version, id string) ServiceInfo {
 
 func (s *ServiceInfo) GetInstanceId() string {
 	hostname, _ := os.Hostname()
-	return s.Id + "_" + hostname
+	return s.Id + "_" + hostname + s.Name
 }
 
 func (s *ServiceInfo) SetMataData(k, v string) {
