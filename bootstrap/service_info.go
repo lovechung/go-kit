@@ -36,11 +36,18 @@ func (s *ServiceInfo) SetMataData(k, v string) {
 }
 
 func GetLocalIP() string {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
+	adds, err := net.InterfaceAddrs()
 	if err != nil {
 		return ""
 	}
-	defer conn.Close()
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	return localAddr.IP.String()
+	for _, address := range adds {
+		// 检查ip地址判断是否回环地址
+		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				return ipNet.IP.String()
+			}
+
+		}
+	}
+	return ""
 }
