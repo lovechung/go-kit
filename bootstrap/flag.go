@@ -4,6 +4,7 @@ import "flag"
 
 type CommandFlags struct {
 	Env         string
+	Endpoint    string
 	Conf        string
 	ConfigType  string
 	ConfigHost  string
@@ -13,6 +14,7 @@ type CommandFlags struct {
 func NewCommandFlags() *CommandFlags {
 	return &CommandFlags{
 		Env:         "",
+		Endpoint:    "",
 		Conf:        "",
 		ConfigHost:  "",
 		ConfigToken: "",
@@ -21,8 +23,9 @@ func NewCommandFlags() *CommandFlags {
 
 func (f *CommandFlags) Init() {
 	flag.StringVar(&f.Env, "env", "dev", "environment")
+	flag.StringVar(&f.Endpoint, "endpoint", "", "host and port")
 	flag.StringVar(&f.Conf, "conf", "./configs", "config path")
-	flag.StringVar(&f.ConfigType, "config_type", "", "config server host")
+	flag.StringVar(&f.ConfigType, "config_type", "", "config server type")
 	flag.StringVar(&f.ConfigHost, "config_host", "", "config server host")
 	flag.StringVar(&f.ConfigToken, "config_token", "", "config server token")
 }
