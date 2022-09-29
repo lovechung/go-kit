@@ -1,6 +1,9 @@
 package bootstrap
 
-import "os"
+import (
+	"net"
+	"os"
+)
 
 type ServiceInfo struct {
 	Name     string
@@ -11,7 +14,10 @@ type ServiceInfo struct {
 
 func NewServiceInfo(name, version, id string) ServiceInfo {
 	if id == "" {
-		id, _ = os.Hostname()
+		id = getIP()
+		if id == "" {
+			id, _ = os.Hostname()
+		}
 	}
 	return ServiceInfo{
 		Name:     name,
@@ -27,4 +33,21 @@ func (s *ServiceInfo) GetInstanceId() string {
 
 func (s *ServiceInfo) SetMataData(k, v string) {
 	s.Metadata[k] = v
+}
+
+func getIP() string {
+	adds, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range adds {
+		// 检查ip地址判断是否回环地址
+		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				return ipNet.IP.String()
+			}
+
+		}
+	}
+	return ""
 }
