@@ -6,13 +6,14 @@ import (
 )
 
 type ServiceInfo struct {
+	Env      string
 	Name     string
 	Version  string
 	Id       string
 	Metadata map[string]string
 }
 
-func NewServiceInfo(name, version, id string) ServiceInfo {
+func NewServiceInfo(env, name, version, id string) ServiceInfo {
 	if id == "" {
 		id = GetLocalIP()
 		if id == "" {
@@ -20,6 +21,7 @@ func NewServiceInfo(name, version, id string) ServiceInfo {
 		}
 	}
 	return ServiceInfo{
+		Env:      env,
 		Name:     name,
 		Version:  version,
 		Id:       id,
