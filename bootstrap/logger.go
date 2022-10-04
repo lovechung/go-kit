@@ -80,7 +80,7 @@ func NewZapLogger(env string, logFile string,
 		)
 	} else {
 		core = zapcore.NewCore(
-			zapcore.NewConsoleEncoder(encoder), // 编码器配置
+			zapcore.NewJSONEncoder(encoder), // 编码器配置
 			zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(getLogWriter(logFile))), // 打印到控制台和文件
 			level, // 日志级别
 		)
