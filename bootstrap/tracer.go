@@ -34,7 +34,6 @@ func NewTracerProvider(endpoint, env string, serviceInfo *ServiceInfo) {
 			semConv.ServiceVersionKey.String(serviceInfo.Version),
 			semConv.ServiceInstanceIDKey.String(serviceInfo.Id),
 			attribute.String("env", env),
-			attribute.String("service.name", serviceInfo.Name),
 		)),
 		trace.WithSpanProcessor(bsp),
 	)
